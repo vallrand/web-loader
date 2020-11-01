@@ -1,6 +1,7 @@
 import { AsyncTask } from '../AsyncTask'
 import { IMaterial, MaterialType } from '../IMaterial'
 import { ILoaderModule } from '../Loader'
+import { crossOrigin } from './cors'
 
 export const AudioElementLoader: ILoaderModule<string | Blob, HTMLAudioElement> =
 function(material: IMaterial<string | Blob>): IMaterial<any> | AsyncTask<IMaterial<HTMLAudioElement>> {
@@ -15,7 +16,8 @@ function(material: IMaterial<string | Blob>): IMaterial<any> | AsyncTask<IMateri
     const task = new AsyncTask<IMaterial<HTMLAudioElement>>()
 
     const audio = new Audio()
-    audio.crossOrigin = 'anonymous'
+    audio.crossOrigin = crossOrigin(dataURI)
+    audio.preload = 'auto'
     audio.onerror = (error: Event | string) => task.reject(error)
     audio.onload = audio.oncanplaythrough = (event: Event) => task.resolve({
         ...material,

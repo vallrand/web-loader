@@ -1,6 +1,7 @@
 import { AsyncTask } from '../AsyncTask'
 import { IMaterial, MaterialType } from '../IMaterial'
 import { ILoaderModule } from '../Loader'
+import { crossOrigin } from './cors'
 
 export const StylesheetLoader = (head: HTMLHeadElement = document.head): ILoaderModule<void, HTMLLinkElement> =>
 function(material: IMaterial<void>): IMaterial<any> | AsyncTask<IMaterial<HTMLLinkElement>> {
@@ -11,7 +12,7 @@ function(material: IMaterial<void>): IMaterial<any> | AsyncTask<IMaterial<HTMLLi
     const style = document.createElement('link')
     style.rel = 'stylesheet'
     style.type = 'text/css'
-    style.crossOrigin = 'anonymous'
+    style.crossOrigin = crossOrigin(material.path)
 
     style.onerror = (error: Event | string) => task.reject(error)
     style.onload = (event: Event) => task.resolve({

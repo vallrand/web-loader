@@ -71,14 +71,14 @@ describe('AsyncTask Promise-like behavior', function(){
             })
         ).rejects.toEqual('error')
     })
-    it('rejects a list of tasks if at least one', async function(){
+    it('rejects a list of tasks if at least one fails', async function(){
         await expect(AsyncTask.all([
             new AsyncTask<void>(),
             new AsyncTask<void>(),
             new AsyncTask<void>().reject('error')
         ])).rejects.toEqual('error')
     })
-    it('resolves a list tasks if all of them are resolved', async function(){
+    it('resolves a list of tasks if all of them succeed', async function(){
         await expect(AsyncTask.all([
             new AsyncTask<number>().resolve(1),
             new AsyncTask<number>().resolve(2),
@@ -88,7 +88,7 @@ describe('AsyncTask Promise-like behavior', function(){
 })
 
 describe('AsyncTask Cancel behavior', function(){
-    it('Calls reject on all chained tasks', async function(){
+    it('calls reject on all chained tasks', async function(){
         const start = new AsyncTask<void>()
         const middle = new AsyncTask<void>()
         const end = start.then(() => middle)
@@ -120,7 +120,7 @@ describe('AsyncTask Cancel behavior', function(){
         await expect(middle).rejects.toEqual('cancel')
         await expect(end).rejects.toEqual('cancel')
     })
-    it('Calls reject if at least one fails', async function(){
+    it('calls reject if at least one fails', async function(){
         const taskA = new AsyncTask<void>()
         const taskB = new AsyncTask<void>()
         const taskC = new AsyncTask<void>().reject('error')

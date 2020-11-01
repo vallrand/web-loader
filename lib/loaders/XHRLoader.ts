@@ -19,7 +19,7 @@ function(material: IMaterial<any>): IMaterial<any> | AsyncTask<IMaterial<any>> {
     xhr.open('GET', encodeURI(material.path), true)
     xhr.responseType = mapper[material.type as MaterialType] || 'text'
 
-    //xhr.onprogress = (event: ProgressEvent) => event.lengthComputable && task.update(event.loaded / event.total)
+    xhr.onprogress = (event: ProgressEvent) => event.lengthComputable && this.progress(event.loaded / event.total)
     xhr.onreadystatechange = (event: Event) => xhr.readyState === XMLHttpRequest.DONE && (
         xhr.status === 200
         ? task.resolve({

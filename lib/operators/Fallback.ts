@@ -15,8 +15,11 @@ function(this: ILoadContext, material: IMaterial){
     const task = new AsyncTask<IMaterial>()
 
     const tryNext = (path: string) => {
-        const loading = load(this.root, [path])
-        task.callback(undefined, loading.reject)
+        const loading = load(this.root, [path], this.progress.bind(this))
+        task.callback(undefined, error => {
+            fallbacks.length = 0
+            loading.reject(error)
+        })
         loading.callback(materials => task.resolve(materials[0]), error => {
             if(fallbacks.length) tryNext(fallbacks.shift() as string)
             else task.reject(error)

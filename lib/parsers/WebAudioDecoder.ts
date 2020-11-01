@@ -16,6 +16,7 @@ export function decodeArrayBuffer(data: Blob | string): AsyncTask<ArrayBuffer> {
         for(let i = 0; i < view.length; view[i] = bytes.charCodeAt(i++));
         done.resolve(view.buffer)
     }
+	//if already arraybuffer/view return otherwise throw error
     return done
 }
 

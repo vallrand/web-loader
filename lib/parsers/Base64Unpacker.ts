@@ -11,7 +11,8 @@ function(this: ILoadContext, material: IMaterial<object>): IMaterial<any> | Asyn
     return load(this.root, Object.keys(materials).map<IMaterial<any>>(path => {
         const dataURI = materials[path]
 
-        if(typeof dataURI !== 'string') return { path, data: dataURI }
+        if(typeof dataURI !== 'string') return { path, data: dataURI, type: MaterialType.JSON }
+        else if(dataURI.indexOf('data:') !== 0) return { path, data: dataURI, type: MaterialType.TEXT }
         
         const [ metaData, data ] = dataURI.split(',')
         const [ mediaType, encoding ] = metaData.replace('data:','').split(';')
@@ -27,7 +28,7 @@ function(this: ILoadContext, material: IMaterial<object>): IMaterial<any> | Asyn
                     return { path, data, type: MaterialType.TEXT }
             default: throw new Error(`Unrecognized base64 type: "${metaData}".`)
         }
-    })).then(materials => ({
+    }), this.progress.bind(this)).then(materials => ({
         ...material,
         data: materials
     }))

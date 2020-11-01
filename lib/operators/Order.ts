@@ -13,7 +13,7 @@ export const Order = (module: ILoaderModule): ILoaderModule => {
             startIndex: globalIndex - index,
             start: new AsyncTask<void>()
         }
-        const end = item.start.then(module.bind(this, material))
+        const end = item.start.then<IMaterial>(() => module.call(this, material))
 
         if((progress[item.startIndex] || 0) >= index) item.start.resolve()
         else queue.push(item)
@@ -28,7 +28,7 @@ export const Order = (module: ILoaderModule): ILoaderModule => {
             }
         }, function(){
             let index = queue.indexOf(item)
-            if(!~index) queue.splice(index, 1)
+            if(~index) queue.splice(index, 1)
         })
 
         return end

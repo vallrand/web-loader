@@ -1,6 +1,7 @@
 import { AsyncTask } from '../AsyncTask'
 import { IMaterial, MaterialType } from '../IMaterial'
 import { ILoaderModule } from '../Loader'
+import { crossOrigin } from './cors'
 
 export const ScriptElementLoader = (head: HTMLHeadElement = document.head): ILoaderModule<void, HTMLScriptElement> =>
 function(material: IMaterial<void>): IMaterial<any> | AsyncTask<IMaterial<HTMLScriptElement>> {
@@ -10,7 +11,7 @@ function(material: IMaterial<void>): IMaterial<any> | AsyncTask<IMaterial<HTMLSc
 
     const script = document.createElement('script')
     script.async = true
-    script.crossOrigin = 'anonymous'
+    script.crossOrigin = crossOrigin(material.path)
 
     script.onerror = (error: Event | string) => task.reject(error)
     script.onload = (event: Event) => task.resolve({

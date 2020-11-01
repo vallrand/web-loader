@@ -12,6 +12,7 @@ Modular asset loader for web applications.
   - [Operators](#operators)
   - [Loaders](#loaders)
   - [Parsers](#parsers)
+  - [Custom](#custom)
 
 ## Installation
 
@@ -40,9 +41,10 @@ load(Chain([
 ]), [
     'assets/textures/background.jpg',
     'assets/sfx/theme.mp3'
-])
+], progress => console.log(`Loading ${100 * progress}%`))
 .then(assets => {
-    //
+    const image = assets[0].data
+    const music = assets[1].data
 })
 .catch(error => console.error(error))
 ```
@@ -53,10 +55,11 @@ Loader is composed out of different modules, each providing it's own functionali
 ### Operators
 | Module | Example | Description |
 | ------ | ------ | ------ |
-| Chain | `Chain([ ...modules ])` | Combine multiple loader modules into one. |
-| Filter | `Filter(material => true/false, module)` | If block. |
-| Store | `Store(internal?)` | Cache. Internal resolve assumes that no additional requests should be made. |
+| Chain | `Chain([ ...modules ])` | `For each` block. |
+| Filter | `Filter(module, material => true/false)` | `If` block. |
+| Catch | `Catch(module, (error, material) => material)` | `Try catch` block. |
 | Throttle | `Throttle(16)(module)` | Limit the number of concurrent requests. |
+| Store | `Store(internal?)` | Cache. Internal resolve assumes that no additional requests should be made. |
 | Fallback | `Fallback()` | In case of failure will resort to fallbacks if supplied. |
 | Order | `Order(module)` | Execute in strict order. |
 
@@ -66,8 +69,8 @@ Loader is composed out of different modules, each providing it's own functionali
 | XHRLoader | `XHRLoader()` | Load files using http request. |
 | ImageElementLoader | `ImageElementLoader` | Load image into `<img>`. |
 | AudioElementLoader | `AudioElementLoader` | Load audio into `<audio>`. |
-| StylesheetLoader | `StylesheetLoader()` | Load CSS asynchronously. |
-| ScriptLoader | `ScriptLoader()` | Load and execute javascript asynchronously. |
+| ScriptElementLoader | `ScriptElementLoader()` | Load and execute javascript asynchronously into `<script>`. |
+| StylesheetLoader | `StylesheetLoader()` | Load CSS asynchronously into `<link>`. |
 
 ### Parsers
 | Module | Example | Description |
@@ -80,3 +83,14 @@ Loader is composed out of different modules, each providing it's own functionali
 | SVGParser | `SVGParser` | Convert SVG to image. |
 | WebAudioDecoder | `WebAudioDecoder(audioContext)` | Decode web audio buffer. |
 | Base64Unpacker | `Base64Unpacker(material => material.data)` | Unpack base64 encoded assets from json bundle. |
+
+### Custom
+
+Any function or async function can be used as a loading module.
+```javascript
+async function customLoader(material){
+    const response = await fetch(material.path)
+    const data = await response.json()
+    return { ...material, data }
+}
+```

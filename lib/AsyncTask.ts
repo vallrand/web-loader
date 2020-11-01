@@ -4,19 +4,27 @@ const enum TaskStatus {
     REJECTED = 2
 }
 
+/** Custom `Promise`.
+ * Can be resolved externally.
+ * Propagates errors up the chain.
+*/
 export class AsyncTask<T> implements PromiseLike<T> {
     private _value: T | any
     private _status: TaskStatus = TaskStatus.PENDING
     private readonly _listeners: Array<(this: this) => void> = []
 
+    /** Complete the task with provided value or Promise of the value. */
     public resolve = (value: T | PromiseLike<T>): this => this._settle(TaskStatus.RESOLVED, value)
+    /** Fail the task with provided error. */
     public reject = (reason: any): this => this._settle(TaskStatus.REJECTED, reason)
 
+    /** @internal */
     private _propagate(){
         for(let i = 0; i < this._listeners.length; i++)
             this._listeners[i].call(this)
         if(this._status !== TaskStatus.PENDING) this._listeners.length = 0
     }
+    /** @internal */
     private _settle(status: TaskStatus, value: T | any | PromiseLike<T>): this {
         if(this._status !== TaskStatus.PENDING) return this
 
@@ -56,6 +64,11 @@ export class AsyncTask<T> implements PromiseLike<T> {
         return this.then(undefined, onReject)
     }
 
+    /** Attach passive listeners to the task.
+     * @param resolve Callback to execute in case of success.
+     * @param reject Callback to execute in case of failure.
+     * @return Current task object.
+     */
     public callback(resolve?: (value: T) => void, reject?: (reason: any) => void): this {
         this._listeners.push(function(){
             if(this._status === TaskStatus.RESOLVED && resolve)
@@ -67,13 +80,18 @@ export class AsyncTask<T> implements PromiseLike<T> {
         return this
     }
 
-    public unwrap(suppress?: boolean): T | void {
+    /** Access PromiseLike value in synchronous manner.
+     * @param suppress Ignore errors and return current value
+     * @return Resolved value if completed. Throw error if failed. undefined if failed.
+     */
+    public unwrap(suppress?: boolean): T | void | never {
         if(this._status === TaskStatus.REJECTED && !suppress)
             throw this._value
         else if(this._status === TaskStatus.RESOLVED || suppress)
             return this._value
     }
 
+    /** Resolves when all tasks are resolved. On any error rejects all tasks and returns error. */
     public static all<T = any>(list: AsyncTask<T>[]): AsyncTask<T[]> {
         const next = new AsyncTask<T[]>()
         let remaining = list.length
