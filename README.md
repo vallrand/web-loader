@@ -18,7 +18,7 @@ Modular asset loader for web applications.
 
 With [NPM](https://www.npmjs.com/)
 ```sh
-$ npm install --save-dev
+$ npm install --save @wault/web-loader
 ```
 
 ## API
@@ -31,7 +31,7 @@ import {
     ImageElementLoader,
     WebAudioParser,
     TypeDetector
-} from 'web-loader'
+} from '@wault/web-loader'
 
 load(Chain([
     TypeDetector,
@@ -78,7 +78,7 @@ Loader is composed out of different modules, each providing it's own functionali
 | TypeDetector | `TypeDetector()` | Detect file extension. |
 | JSONParser | `JSONParser` | Parse JSON data. |
 | XMLParser | `XMLParser` | Parse XML data. |
-| ScriptParser | `ScriptParser()` | Execute script. |
+| ScriptExecutor | `ScriptExecutor()` | Execute script. |
 | StylesheetParser | `StylesheetParser()` | Apply CSS. |
 | SVGParser | `SVGParser` | Convert SVG to image. |
 | WebAudioDecoder | `WebAudioDecoder(audioContext)` | Decode web audio buffer. |
