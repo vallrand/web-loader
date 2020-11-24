@@ -1,6 +1,7 @@
 import { AsyncTask } from '../AsyncTask'
 import { IMaterial, MaterialType } from '../IMaterial'
 import { ILoaderModule, ILoadContext, load } from '../Loader'
+import { parseDataURI } from '../converters'
 
 export const Base64Unpacker = (extractor: (material: IMaterial<any>) => Record<string, string> | undefined): ILoaderModule<any, IMaterial[]> =>
 function(this: ILoadContext, material: IMaterial<object>): IMaterial<any> | AsyncTask<IMaterial<IMaterial[]>> {
@@ -12,11 +13,7 @@ function(this: ILoadContext, material: IMaterial<object>): IMaterial<any> | Asyn
         const dataURI = materials[path]
 
         if(typeof dataURI !== 'string') return { path, data: dataURI, type: MaterialType.JSON }
-        else if(dataURI.indexOf('data:') !== 0) return { path, data: dataURI, type: MaterialType.TEXT }
-        
-        const [ metaData, data ] = dataURI.split(',')
-        const [ mediaType, encoding ] = metaData.replace('data:','').split(';')
-        const [ type, subType ] = mediaType.split('/')
+        const { type, subType, data } = parseDataURI(dataURI)
 
         switch(type){
             case 'image': return { path, data: dataURI, type: MaterialType.IMAGE }
@@ -26,7 +23,7 @@ function(this: ILoadContext, material: IMaterial<object>): IMaterial<any> | Asyn
                     return { path, data, type: MaterialType.XML }
                 else
                     return { path, data, type: MaterialType.TEXT }
-            default: throw new Error(`Unrecognized base64 type: "${metaData}".`)
+            default: throw new Error(`Unrecognized base64 type: "${type}".`)
         }
     }), this.progress.bind(this)).then(materials => ({
         ...material,
