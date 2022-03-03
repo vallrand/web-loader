@@ -1,5 +1,8 @@
 # Web Loader
 
+[![Build](https://github.com/vallrand/web-loader/workflows/publish/badge.svg)](https://github.com/vallrand/web-loader/actions)
+[![npm version](https://badge.fury.io/js/@wault%2Fweb-loader.svg)](https://www.npmjs.com/package/@wault/web-loader)
+
 > **WARNING**: This project is under development. Current use is not recommended!
 
 Modular asset loader for web applications.

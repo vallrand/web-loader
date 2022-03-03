@@ -1,6 +1,6 @@
 {
   "name": "@wault/web-loader",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "modular asset loader for web applications",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
